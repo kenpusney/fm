@@ -8,6 +8,6 @@ origin:
 
 examples:
 
-'''shell
+```shell
 ruby -I. example.rb
-'''
+```
