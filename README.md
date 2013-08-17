@@ -58,7 +58,7 @@ for __each__ class, it has different internal factors:
 e.g.:
 ```ruby
 ^AnInterface >
-    +^parse(expr:string):Hash
+    +^parse(expr:string):Hash;
 SomeClass<AClass.AnInterface >
     
     ## attributes with access method.
@@ -83,6 +83,7 @@ SomeClass<AClass.AnInterface >
                                  ## Ruby  : def self.@create  ## () -> SomeClass
                                  ##       : end
                                  ##       : alias_method :make,:create
+    ;
 ```
 
 ### addtional features:
