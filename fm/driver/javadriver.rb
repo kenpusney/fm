@@ -20,13 +20,44 @@ Class_template=<<JAVA_CLASS_END
 
 public class <%=@info[:self]%><%= (@info[:parent])? " extends " : ""%><%=@info[:parent]%> {
     <%for elem in @info[:comps]%>
-    private <%=elem%> _<%=elem.to_s.downcase%>;<%end%>
+    private <%=elem[:type]%> <%=elem[:name]%>;<%end%>
 
     public <%=@info[:self]%>(){ }
-<%for mtd in @info[:methods][:public]%>
-    public <%=dump_sign(mtd)%>{ }<%end%>
+
+    //* Getter & setter */<%for comp in @info[:comps]
+  if comp[:acl]
+    for acl in comp[:acl].split ""
+      prefix = case acl
+          when 'r'
+            comp[:type].to_s + ' get'+comp[:name]+"(){ return "+comp[:name]+"; };"
+          when 'w'
+            'void set'+comp[:name]+"("+comp[:type].to_s+" value){ "+comp[:name]+"=value; };"
+          end
+    %>
+    public <%=prefix%><%
+    end
+  end
+end
+%>
+    
+    //* Class methods */<%for mtd in @info[:methods][:static]%>
+    public static <%=dump_sign(mtd)%> { 
+        // Add your code here
+    }<%end%>
+
+    //* Instance methods/<%for mtd in @info[:methods][:public]%>
+    public <%=dump_sign(mtd)%> {
+        // add your code here
+    }<%end%>
 <%for mtd in @info[:methods][:private]%>
-    private <%=dump_sign(mtd)%>{ }<%end%>
+    private <%=dump_sign(mtd)%> { 
+        // add your code here
+    }<%end%>
+
+    //* alias */<%for mtd in @info[:methods][:alias]%>
+    <%=mtd[:acl]%> <%=dump_sign(mtd)%> { 
+        return <%=dump_alias(mtd)%>; 
+    }<%end%>
 }
 
 JAVA_CLASS_END

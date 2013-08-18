@@ -35,13 +35,36 @@ Class_template=<<RUBY_CLASS_END
 <%unless @reserved.include? dep.to_sym %>require '<%=dep%>'<%end%><%end%>
 
 class <%=@info[:self]%><%= (@info[:parent])? " < " : ""%><%=@info[:parent]%>
+<%for elem in @info[:comps]
+  if elem[:acl]
+    prefix = "";
+    case elem[:acl]
+    when /rw|wr/
+      prefix = "attr_accessor :"
+    when "r"
+      prefix = "attr_reader :"
+    when "w" 
+      prefix = "attr_writer :"
+    end%>
+  <%=prefix+elem[:name]%><%end
+end
+%>
+
   def initialize<%for elem in @info[:comps]%>
-    @<%=elem.to_s.downcase%>=<%=elem%>.new<%end%>
+    @<%=elem[:name]%>=<%=elem[:type]%>.new<%end%>
   end
 <%for mtd in @info[:methods][:public]%>
   def <%=dump_sign(mtd)%>
 
   end<%end%>
+
+<%for mtd in @info[:methods][:static]%>
+  def self.<%=dump_sign(mtd)%>
+
+  end<%end%>
+<%for mtd in @info[:methods][:alias]%>
+  alias_method :<%=mtd[:name]%>,:<%=mtd[:alias]%>
+<%end%>
 
 private
 <%for mtd in @info[:methods][:private]%>

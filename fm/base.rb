@@ -10,7 +10,9 @@ module FM
         @parent = nil
         @methods = {
           :public => [],
-          :private => []
+          :private => [],
+          :static => [],
+          :alias => []
         }
       end
       def dump(driver = nil)
@@ -34,9 +36,13 @@ module FM
         cls.composed_by(self)
       end
 
-      def composed_by(cls)
-        @comps << cls
-        @deps.uniq!
+      def composed_by(cls,name=nil,acl=nil)
+        name ||= cls.to_s.downcase;
+        @comps << {
+              type: cls.to_sym,
+              name: name,
+              acl: acl
+            }
       end
 
       def depend(cls)
@@ -67,7 +73,7 @@ module FM
       end
 
       def add_method(mtd)
-        acl = (mtd =~ /^\b*-/)
+        acl = (mtd =~ /^\s*([+\-=])/) && $1
         resolve_signature(acl,mtd)
       end
 
@@ -77,28 +83,44 @@ module FM
 
       private
 
-      def resolve_signature(acl = true,mtd = "")
+      def resolve_signature(acl = '+',mtd = "")
         if mtd.empty?
           return
         else
-          mtd =~ /^ \s* [+\-]?  # acl
+          mtd =~ /^ \s* [+\-=]?  # acl
                 \s* (\w+)\s*  # method name
+                (\/\s*(\w+)\s*)?  # method alias
                 \( (.*) \)    # method argument list
                 :?\s*(\w+)?   # method return type
               /x
           mtd_name = $1
-          mtd_args = $2.empty? ? nil : $2
-          mtd_ret = $3
+          mtd_args = $4.empty? ? nil : $4
+          mtd_ret = $5
           if mtd_args
             mtd_args = mtd_args.split(',').map do | elem |
               pair = elem.split ':'
               { :type => pair[1].strip, :name => pair[0].strip }
             end
           end
-          @methods[ acl ? :private : :public] << {
+          acl = case acl
+            when '+'
+              :public
+            when '-'
+              :private
+            when '='
+              :static
+            end
+          @methods[ acl ] << {
             :name => mtd_name,
             :return => mtd_ret,
             :args => mtd_args
+          }
+          $3 and @methods[:alias] << {
+            :name => $3,
+            :return => mtd_ret,
+            :args => mtd_args,
+            :alias => mtd_name,
+            :acl => acl
           }
         end
       end
