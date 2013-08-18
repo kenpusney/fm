@@ -100,7 +100,13 @@ SomeClass<AClass.AnInterface >
 
 > under designing.
 
+## changelog:
 
+* Aug 19 2013
+
+> 1.static method
+> 2.method alias
+> 3.getter/setter
 
 ## origin:
 
