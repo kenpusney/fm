@@ -1,5 +1,4 @@
 
-
 require 'fm/driver/cppdriver'
 module FM
   module Driver
@@ -16,7 +15,7 @@ module FM
     module Java
 Class_template=<<JAVA_CLASS_END
 <%for dep in @info[:deps]%>
-<%unless @reserved.include? dep.to_sym %>import <%=dep%>;<%end%><%end%>
+<%unless @reserved.include? dep.to_sym %>import <%=dep%>.*;<%end%><%end%>
 
 public class <%=@info[:self]%><%= (@info[:parent])? " extends " : ""%><%=@info[:parent]%> {
     <%for elem in @info[:comps]%>
@@ -24,7 +23,7 @@ public class <%=@info[:self]%><%= (@info[:parent])? " extends " : ""%><%=@info[:
 
     public <%=@info[:self]%>(){ }
 
-    //* Getter & setter */<%for comp in @info[:comps]
+    /* Getter & setter */<%for comp in @info[:comps]
   if comp[:acl]
     for acl in comp[:acl].split ""
       prefix = case acl
@@ -40,12 +39,12 @@ public class <%=@info[:self]%><%= (@info[:parent])? " extends " : ""%><%=@info[:
 end
 %>
     
-    //* Class methods */<%for mtd in @info[:methods][:static]%>
+    /* Class methods */<%for mtd in @info[:methods][:static]%>
     public static <%=dump_sign(mtd)%> { 
         // Add your code here
     }<%end%>
 
-    //* Instance methods/<%for mtd in @info[:methods][:public]%>
+    /* Instance methods */<%for mtd in @info[:methods][:public]%>
     public <%=dump_sign(mtd)%> {
         // add your code here
     }<%end%>
@@ -54,7 +53,7 @@ end
         // add your code here
     }<%end%>
 
-    //* alias */<%for mtd in @info[:methods][:alias]%>
+    /* alias */<%for mtd in @info[:methods][:alias]%>
     <%=mtd[:acl]%> <%=dump_sign(mtd)%> { 
         return <%=dump_alias(mtd)%>; 
     }<%end%>

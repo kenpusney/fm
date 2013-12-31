@@ -3,11 +3,12 @@ require 'fm/driver/base'
 module FM
   module Class
     class ClassBase
-      def initialize
+      def initialize(name=nil)
         @deps = []
         @childs = []
         @comps = []
         @parent = nil
+        @name=name
         @methods = {
           :public => [],
           :private => [],
@@ -65,7 +66,11 @@ module FM
       end
 
       def to_s
-        self.class.name.gsub('FM::',"");
+        if @name
+          @name
+        else
+          self.class.name.gsub('FM::',"");
+        end
       end
 
       def to_sym
@@ -79,7 +84,9 @@ module FM
 
       alias_method :is_a, :inherit
       alias_method :has_a, :composed_by
+      alias_method :<=, :inherit
       alias_method :<<, :add_method
+      alias_method :<, :depend
 
       private
 

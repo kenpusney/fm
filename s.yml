@@ -1,0 +1,12 @@
+---
+:symbols:
+  "-" : :private
+  "+" : :public
+  "=" : :static
+  "@" : :field
+  "#" : :attribute
+  "^" : :interface
+  "<" : :extends
+  "." : :implements
+  ":" : :type
+  ";" : :delimiter
