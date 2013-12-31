@@ -1,5 +1,5 @@
 
-require 'fm/base'
+require 'fm/class'
 require 'erb'
 module FM
   module Driver
